@@ -262,3 +262,37 @@ a { color: inherit; }
   .hero { padding: 28px; min-height: auto; }
   .hero-copy h2 { font-size: 28px; }
 }
+
+.speak-block { margin: 10px 0 12px; }
+.speak-block.compact { margin: 8px 0; }
+.speak-line {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+}
+.speak-line b, .speak-line em {
+  font-size: 11px; font-style: normal; color: #5f7a76; font-weight: 800;
+}
+.zh-line {
+  color: #3d6a66 !important;
+  background: #eef7f4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px !important;
+  line-height: 1.5;
+  margin-top: 6px !important;
+}
+.flash-actions { grid-template-columns: 1fr 1fr 1fr !important; }
+.flash-actions .next {
+  background: var(--ink) !important;
+  color: #fff !important;
+  border-color: var(--ink) !important;
+}
+.quiz-foot {
+  flex-direction: column !important;
+  align-items: stretch !important;
+}
+.quiz-explain { width: 100%; }
+.quiz-foot .primary { align-self: flex-end; }
+.lib-card { align-items: start !important; }
+@media (max-width: 560px) {
+  .flash-actions { grid-template-columns: 1fr !important; }
+}

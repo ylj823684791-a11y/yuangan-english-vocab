@@ -5,6 +5,8 @@ export type Word = {
   category: string;
   level: string;
   definition: string;
+  /** Chinese translation of the English definition (释义翻译) */
+  definitionZh?: string;
   collocation: string;
   example: string;
   exampleZh: string;

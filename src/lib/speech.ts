@@ -3,12 +3,16 @@ export type Accent = 'us' | 'uk';
 let curAudio: HTMLAudioElement | null = null;
 const audioCache: Record<string, HTMLAudioElement | 'fail'> = {};
 
-function canUseRealAudio(t: string): boolean {
-  t = String(t).trim();
-  if (!t || t.length > 90) return false;
-  if (/[µ°℃×±]/.test(t)) return false;
-  if (/[0-9].*\/.*[0-9]/.test(t)) return false;
-  return /^[A-Za-z0-9][A-Za-z0-9\s.,'?!()&%/\-]*$/.test(t);
+/** Short terms/phrases → Youdao; long sentences → speechSynthesis first. */
+function preferYoudao(t: string): boolean {
+  const text = String(t).trim();
+  if (!text) return false;
+  if (text.length > 60) return false;
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length > 8) return false;
+  if (/[µ°℃×±]/.test(text)) return false;
+  if (/[0-9].*\/.*[0-9]/.test(text)) return false;
+  return /^[A-Za-z0-9][A-Za-z0-9\s.,'?!()&%/\-]*$/.test(text);
 }
 
 export function stopAllAudio() {
@@ -20,13 +24,13 @@ export function stopAllAudio() {
 }
 
 function audioCandidates(text: string): string[] {
-  if (!canUseRealAudio(text)) return [];
+  if (!preferYoudao(text)) return [];
   const cands = [text];
   const stripped = text.replace(/\s*\([^)]*\)/g, '').trim();
-  if (stripped && stripped !== text && canUseRealAudio(stripped)) cands.push(stripped);
+  if (stripped && stripped !== text && preferYoudao(stripped)) cands.push(stripped);
   if (text.includes('/')) {
     const first = text.split('/')[0].trim();
-    if (first && !cands.includes(first) && canUseRealAudio(first)) cands.push(first);
+    if (first && !cands.includes(first) && preferYoudao(first)) cands.push(first);
   }
   return cands;
 }
@@ -57,7 +61,7 @@ function speakTTS(text: string, accent: Accent) {
     const voice = pickEnglishVoice(accent === 'uk');
     if (voice) u.voice = voice;
     u.lang = voice?.lang || (accent === 'uk' ? 'en-GB' : 'en-US');
-    u.rate = 0.88;
+    u.rate = 0.9;
     u.onend = () => resolve();
     u.onerror = () => reject(new Error('tts-error'));
     window.speechSynthesis.cancel();

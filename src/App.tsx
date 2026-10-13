@@ -447,7 +447,14 @@ export default function App() {
                   <div className="flash-back">
                     <small>{card.phonetic}</small>
                     <h2>{card.zh}</h2>
-                    <p>{card.definition}</p>
+                    <div className="speak-block">
+                      <div className="speak-line">
+                        <b>英文释义</b>
+                        <SpeakBtn text={card.definition} accent={progress.accent} />
+                      </div>
+                      <p>{card.definition}</p>
+                      {card.definitionZh && <p className="zh-line">{card.definitionZh}</p>}
+                    </div>
                     {card.collocation && (
                       <>
                         <b>常用搭配</b>
@@ -461,15 +468,24 @@ export default function App() {
                     加入学习中
                   </button>
                   <button type="button" className="ok" onClick={() => { markKnown(card.term); nextCard(); }}>
-                    已掌握 →
+                    已掌握
+                  </button>
+                  <button type="button" className="next" onClick={nextCard}>
+                    下一个 →
                   </button>
                 </div>
               </section>
               <section className="panel context">
                 <span className="eyebrow">IN CONTEXT</span>
                 <h3>真实语境</h3>
-                <blockquote>{card.example}</blockquote>
-                <p>{card.exampleZh}</p>
+                <div className="speak-block">
+                  <div className="speak-line">
+                    <b>例句</b>
+                    <SpeakBtn text={card.example} accent={progress.accent} />
+                  </div>
+                  <blockquote>{card.example}</blockquote>
+                  <p className="zh-line">{card.exampleZh || '（暂无中文翻译）'}</p>
+                </div>
                 <div className="tip">
                   <b>来源</b>
                   <a href={card.sourceUrl} target="_blank" rel="noreferrer">
@@ -533,9 +549,27 @@ export default function App() {
             </div>
             {picked && (
               <div className="quiz-foot">
-                <p>
-                  {picked === quizWord.zh ? '回答正确！' : `正确答案：${quizWord.zh}`}
-                </p>
+                <div className="quiz-explain">
+                  <p>
+                    {picked === quizWord.zh ? '回答正确！' : `正确答案：${quizWord.zh}`}
+                  </p>
+                  <div className="speak-block">
+                    <div className="speak-line">
+                      <b>英文释义</b>
+                      <SpeakBtn text={quizWord.definition} accent={progress.accent} />
+                    </div>
+                    <p>{quizWord.definition}</p>
+                    {quizWord.definitionZh && <p className="zh-line">{quizWord.definitionZh}</p>}
+                  </div>
+                  <div className="speak-block">
+                    <div className="speak-line">
+                      <b>例句</b>
+                      <SpeakBtn text={quizWord.example} accent={progress.accent} />
+                    </div>
+                    <p>{quizWord.example}</p>
+                    <p className="zh-line">{quizWord.exampleZh || '（暂无中文翻译）'}</p>
+                  </div>
+                </div>
                 <button type="button" className="primary" onClick={nextQuiz}>
                   下一题 →
                 </button>
@@ -600,7 +634,7 @@ export default function App() {
             ) : (
               <div className="word-list">
                 {filtered.slice(0, 300).map((w) => (
-                  <article key={w.term}>
+                  <article key={w.term} className="lib-card">
                     <div>
                       <h3>
                         {w.term} <SpeakBtn text={w.term} accent={progress.accent} />
@@ -609,7 +643,24 @@ export default function App() {
                     </div>
                     <div>
                       <b>{w.zh}</b>
-                      <p>{w.definition}</p>
+                      <div className="speak-block compact">
+                        <div className="speak-line">
+                          <em>释义</em>
+                          <SpeakBtn text={w.definition} accent={progress.accent} />
+                        </div>
+                        <p>{w.definition}</p>
+                        {w.definitionZh && <p className="zh-line">{w.definitionZh}</p>}
+                      </div>
+                      {w.example && (
+                        <div className="speak-block compact">
+                          <div className="speak-line">
+                            <em>例句</em>
+                            <SpeakBtn text={w.example} accent={progress.accent} />
+                          </div>
+                          <p>{w.example}</p>
+                          <p className="zh-line">{w.exampleZh || '（暂无中文翻译）'}</p>
+                        </div>
+                      )}
                     </div>
                     <span className="tag">{w.category}</span>
                     <button type="button" onClick={() => toggleSaved(w.term)}>
@@ -686,7 +737,22 @@ export default function App() {
                       </div>
                       <div>
                         <b>{w.zh}</b>
-                        <p>{w.example}</p>
+                        <div className="speak-block compact">
+                          <div className="speak-line">
+                            <em>释义</em>
+                            <SpeakBtn text={w.definition} accent={progress.accent} />
+                          </div>
+                          <p>{w.definition}</p>
+                          {w.definitionZh && <p className="zh-line">{w.definitionZh}</p>}
+                        </div>
+                        <div className="speak-block compact">
+                          <div className="speak-line">
+                            <em>例句</em>
+                            <SpeakBtn text={w.example} accent={progress.accent} />
+                          </div>
+                          <p>{w.example}</p>
+                          <p className="zh-line">{w.exampleZh || '（暂无中文翻译）'}</p>
+                        </div>
                       </div>
                       <span className="tag">{w.category}</span>
                       <button
