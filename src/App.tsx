@@ -487,7 +487,14 @@ export default function App() {
                 ['学习中', progress.learning.length, '词'],
                 ['进度', pct, '%'],
               ].map(([label, value, unit]) => (
-                <article key={String(label)}>
+                <article
+                  key={String(label)}
+                  style={label === '学习中' || label === '已掌握' ? { cursor: 'pointer' } : undefined}
+                  onClick={() => {
+                    if (label === '学习中') { setQuality('学习中'); setTab('library'); }
+                    if (label === '已掌握') setTab('progress');
+                  }}
+                >
                   <b>
                     {value}
                     <small>{unit}</small>
@@ -618,8 +625,12 @@ export default function App() {
                   </div>
                 )}
                 <div className="flash-actions" onClick={(e) => e.stopPropagation()}>
-                  <button type="button" onClick={() => markLearning(card.term)}>
-                    加入学习中
+                  <button
+                    type="button"
+                    className={progress.learning.includes(card.term) ? 'selected' : ''}
+                    onClick={() => { markLearning(card.term); nextCard(); }}
+                  >
+                    {progress.learning.includes(card.term) ? '✓ 已在学习中' : '加入学习中'}
                   </button>
                   <button type="button" className="ok" onClick={() => { markKnown(card.term); nextCard(); }}>
                     已掌握
