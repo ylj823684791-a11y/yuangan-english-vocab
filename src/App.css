@@ -1,0 +1,264 @@
+:root {
+  --ink: #16312d;
+  --muted: #6c7d78;
+  --paper: #f3f8f6;
+  --card: #fff;
+  --line: #dce9e5;
+  --green: #0f7779;
+  --green-dark: #0b5f61;
+  --lime: #c9e767;
+  --warm: #e87947;
+  --danger: #c44;
+  --radius: 16px;
+  --shadow: 0 12px 30px rgba(15, 119, 121, 0.08);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+.muted { color: var(--muted); }
+.tiny { font-size: 11px; }
+.warn { color: #9a5b2a; }
+.eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #75867f;
+  text-transform: uppercase;
+}
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+}
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 28px 18px 20px;
+  border-right: 1px solid var(--line);
+  background: #f7fbf9;
+  display: flex;
+  flex-direction: column;
+}
+.brand { display: flex; gap: 11px; align-items: center; padding: 0 8px 28px; }
+.brandmark {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--green); color: #fff; font-weight: 800;
+  box-shadow: 0 8px 20px rgba(15,119,121,.25);
+}
+.brand b { display: block; font-size: 16px; }
+.brand span { display: block; color: var(--muted); font-size: 10px; letter-spacing: 1px; margin-top: 2px; }
+.sidebar nav { display: flex; flex-direction: column; gap: 6px; }
+.sidebar nav button {
+  border: 0; background: none; color: #526660; text-align: left;
+  border-radius: 12px; padding: 12px 13px; display: flex; gap: 10px; align-items: center;
+  font-weight: 700; font-size: 14px;
+}
+.sidebar nav button i { font-style: normal; width: 22px; color: #76857f; }
+.sidebar nav button.active { background: var(--ink); color: #fff; }
+.sidebar nav button.active i { color: var(--lime); }
+.badge {
+  margin-left: auto; min-width: 20px; height: 20px; border-radius: 999px;
+  background: var(--green); color: #fff; font-size: 11px; display: grid; place-items: center;
+  font-style: normal; padding: 0 6px;
+}
+.side-card {
+  margin-top: auto; background: #e7f3ef; border-radius: 14px; padding: 16px;
+}
+.side-card strong { display: block; font-family: Georgia, serif; font-size: 32px; margin: 6px 0; }
+.side-card small { font: 12px Arial; }
+.content { padding: 36px 44px 72px; max-width: 1280px; width: 100%; margin: 0 auto; }
+.top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 24px; }
+.top h1 { font-family: Georgia, "Songti SC", serif; font-size: 32px; line-height: 1.15; margin: 8px 0; letter-spacing: -0.5px; }
+.header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.primary, .dark {
+  border: 0; background: var(--ink); color: #fff; padding: 11px 16px;
+  border-radius: 10px; font-weight: 700; font-size: 13px;
+}
+.primary { background: var(--green); }
+.accent-pill, .master-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: #edf5f2; border: 1px solid #e2ece9; border-radius: 999px;
+  padding: 7px 12px; color: #56777a; font-size: 12px;
+}
+.accent-pill select { border: 0; background: transparent; outline: 0; color: #456a6d; }
+.hero {
+  min-height: 280px; border-radius: 24px;
+  background: linear-gradient(110deg, #0b6d73, #117c7d 52%, #208e84);
+  color: #fff; padding: 40px 44px; position: relative; overflow: hidden;
+  box-shadow: var(--shadow); margin-bottom: 18px;
+}
+.hero-copy > span {
+  display: inline-flex; background: rgba(255,255,255,.14); padding: 8px 13px;
+  border-radius: 999px; font-size: 12px; font-weight: 800;
+}
+.hero-copy h2 { font: 700 36px/1.25 Georgia, "Songti SC", serif; margin: 20px 0 12px; }
+.hero-copy p { color: rgba(255,255,255,.75); font-size: 14px; line-height: 1.6; max-width: 560px; }
+.hero-copy button {
+  margin-top: 22px; border: 0; border-radius: 12px; background: #f5bd62;
+  color: #24474a; padding: 13px 20px; font-weight: 800;
+}
+.metrics {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px;
+}
+.metrics.slim article { padding: 16px; }
+.metrics article {
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px;
+}
+.metrics b { display: block; font: 700 28px Georgia, serif; }
+.metrics small { font: 600 11px Arial; color: #819698; margin-left: 4px; }
+.metrics span { display: block; color: #789092; font-size: 12px; margin-top: 4px; }
+.home-grid { display: grid; grid-template-columns: 1.3fr .9fr; gap: 16px; }
+.panel {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px;
+}
+.section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.section-head h2 { margin: 0; font: 700 22px Georgia, "Songti SC", serif; }
+.section-head > button, .panel-head button, .row-actions button {
+  border: 1px solid var(--line); background: #f7faf8; border-radius: 10px; padding: 8px 12px; font-size: 12px; font-weight: 700;
+}
+.preview-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+.preview-list > div {
+  display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 8px;
+  padding: 10px 0; border-bottom: 1px solid #edf2f1;
+}
+.preview-list strong { font-size: 13px; overflow-wrap: anywhere; }
+.preview-list span { font-size: 11px; color: #527174; text-align: right; }
+.cat-list { display: flex; flex-direction: column; gap: 8px; }
+.cat-list button {
+  display: flex; justify-content: space-between; border: 0; background: #f4f9f7;
+  border-radius: 10px; padding: 11px 12px; text-align: left;
+}
+.cat-list b { font-size: 13px; }
+.cat-list span { font-size: 11px; color: #8ba0a2; }
+.speak-btn {
+  width: 32px; height: 32px; border: 0; border-radius: 50%;
+  background: #edf6f4; color: #14777a; flex-shrink: 0;
+}
+.speak-btn.loading { opacity: .6; }
+.speak-btn.error { background: #fde8e8; color: var(--danger); }
+.learn-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 16px; }
+.flash {
+  min-height: 420px; border: 1px solid var(--line); background: var(--card);
+  border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column;
+  box-shadow: var(--shadow); user-select: none;
+}
+.flash-top { display: flex; justify-content: space-between; align-items: center; }
+.flash-top span, .chips span, .tag {
+  font-size: 11px; background: #e7efe9; color: var(--green); padding: 5px 9px; border-radius: 999px;
+}
+.flash-top button { border: 0; background: none; font-size: 22px; color: #b1bcb8; }
+.flash-front { text-align: center; margin: auto; }
+.flash-front small, .flash-back small { color: #94a09c; font-size: 11px; }
+.flash-front h2 { font: 48px Georgia, serif; margin: 18px 0 8px; letter-spacing: -1px; overflow-wrap: anywhere; }
+.flash-back { margin: auto 8px; }
+.flash-back h2 { font: 34px Georgia, "Songti SC", serif; margin: 10px 0; }
+.flash-back p { color: var(--muted); line-height: 1.55; font-size: 13px; }
+.flash-back b { font-size: 12px; }
+.chips { display: flex; gap: 6px; justify-content: center; margin-top: 18px; }
+.flash-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.flash-actions button {
+  border: 1px solid var(--line); background: #f7f8f3; border-radius: 10px; padding: 11px; font-size: 12px; font-weight: 700;
+}
+.flash-actions .ok { background: var(--green); color: #fff; border-color: var(--green); }
+.context blockquote {
+  font: 20px/1.45 Georgia, serif; margin: 10px 0 12px;
+  border-left: 3px solid var(--lime); padding-left: 16px;
+}
+.tip {
+  background: #eef1e7; border-radius: 10px; padding: 12px; margin: 12px 0;
+  display: flex; flex-direction: column; gap: 4px; font-size: 12px;
+}
+.tip a { color: var(--green); font-weight: 700; }
+.row-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.quiz .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.options button {
+  border: 1px solid var(--line); background: #fff; border-radius: 10px;
+  padding: 14px; text-align: left; font-size: 13px; display: flex; justify-content: space-between;
+}
+.options button.correct { border-color: var(--green); background: #eaf3ec; }
+.options button.wrong { border-color: #c66; background: #fae9e7; }
+.quiz-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 12px; }
+.panel-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+}
+.panel-head h2 { margin: 0; font: 700 22px Georgia, "Songti SC", serif; }
+.search {
+  min-width: 240px; flex: 1; max-width: 380px; border: 1px solid var(--line);
+  border-radius: 10px; background: #fff; display: flex; align-items: center; padding: 0 12px;
+}
+.search input { width: 100%; padding: 11px; border: 0; outline: 0; background: transparent; }
+.filters {
+  display: flex; gap: 7px; flex-wrap: wrap; align-items: center;
+  padding: 0 0 12px; border-bottom: 1px solid var(--line); margin-bottom: 8px;
+}
+.filters button {
+  border: 1px solid var(--line); background: #faf9f5; border-radius: 999px;
+  padding: 6px 11px; font-size: 11px; color: var(--muted);
+}
+.filters button.selected { background: var(--ink); color: #fff; }
+.word-list article {
+  display: grid; grid-template-columns: 1.2fr 1.8fr .7fr auto auto;
+  gap: 12px; align-items: center; padding: 14px 4px; border-bottom: 1px solid var(--line);
+}
+.word-list h3 { font: 18px Georgia, serif; margin: 0; display: flex; align-items: center; gap: 6px; overflow-wrap: anywhere; }
+.word-list span, .word-list p { font-size: 11px; color: var(--muted); margin: 4px 0 0; }
+.word-list b { font-size: 13px; }
+.word-list > article > button { border: 0; background: none; font-size: 18px; color: #9aa6a1; }
+.tiny-btn {
+  border: 1px solid var(--line) !important; background: #f5faf8 !important;
+  border-radius: 8px !important; padding: 6px 8px !important; font-size: 11px !important; font-weight: 700;
+  color: var(--green) !important;
+}
+.empty {
+  padding: 40px 16px; text-align: center; color: var(--muted); font-size: 14px;
+}
+.result-note { font-size: 12px; color: var(--muted); padding-top: 10px; }
+.sub { margin: 18px 0 8px; font-size: 16px; }
+.progress-form label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; margin-bottom: 14px; }
+.progress-form input {
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-weight: 500; max-width: 360px;
+}
+.danger { color: var(--danger) !important; border-color: #f0c4c4 !important; background: #fff5f5 !important; }
+.cat-progress { display: grid; gap: 10px; }
+.cat-progress-head { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.bar { height: 6px; background: #e3e7df; border-radius: 3px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--green); }
+.mobile-nav { display: none; }
+@media (max-width: 980px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .content { padding: 20px 16px 96px; }
+  .top { flex-direction: column; align-items: flex-start; }
+  .top h1 { font-size: 26px; }
+  .metrics, .home-grid, .learn-grid, .quiz .options { grid-template-columns: 1fr 1fr; }
+  .home-grid { grid-template-columns: 1fr; }
+  .learn-grid { grid-template-columns: 1fr; }
+  .preview-list { grid-template-columns: 1fr; }
+  .word-list article { grid-template-columns: 1fr; gap: 6px; }
+  .mobile-nav {
+    position: fixed; display: flex; z-index: 50; inset: auto 0 0;
+    background: #fff; border-top: 1px solid var(--line); justify-content: space-around; padding: 8px 4px;
+  }
+  .mobile-nav button {
+    border: 0; background: none; color: #789193; display: flex; flex-direction: column;
+    align-items: center; gap: 2px; font-size: 10px; padding: 4px 8px;
+  }
+  .mobile-nav button i { font-style: normal; font-size: 16px; }
+  .mobile-nav button.active { color: var(--green); }
+}
+@media (max-width: 560px) {
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .quiz .options { grid-template-columns: 1fr; }
+  .flash-front h2 { font-size: 34px; }
+  .hero { padding: 28px; min-height: auto; }
+  .hero-copy h2 { font-size: 28px; }
+}
