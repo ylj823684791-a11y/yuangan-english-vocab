@@ -9,6 +9,17 @@ import {
   toggleTerm,
   touchStreak,
 } from './lib/progress';
+import {
+  clearAuth,
+  fetchCloudProgress,
+  loadAuth,
+  login as apiLogin,
+  logout as apiLogout,
+  mergeProgress,
+  pushCloudProgress,
+  register as apiRegister,
+  type AuthUser,
+} from './lib/api';
 import { speakWord, warmVoices } from './lib/speech';
 import './App.css';
 
@@ -86,15 +97,75 @@ export default function App() {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [auth, setAuth] = useState<AuthUser | null>(() => loadAuth());
+  const [authUser, setAuthUser] = useState('');
+  const [authPass, setAuthPass] = useState('');
+  const [authBusy, setAuthBusy] = useState(false);
+  const [authMsg, setAuthMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+  const [syncState, setSyncState] = useState<'idle' | 'ok' | 'pending' | 'err'>('idle');
+  const cloudReady = useRef(false);
+  const skipCloudPush = useRef(false);
 
   useEffect(() => {
     warmVoices();
     setProgress((p) => touchStreak(p));
   }, []);
 
+  // Load cloud progress after login / on mount
+  useEffect(() => {
+    let cancelled = false;
+    async function hydrate() {
+      if (!auth?.token) {
+        cloudReady.current = true;
+        setSyncState('idle');
+        return;
+      }
+      setSyncState('pending');
+      try {
+        const cloud = await fetchCloudProgress(auth.token);
+        if (cancelled) return;
+        skipCloudPush.current = true;
+        setProgress((local) => {
+          const merged = mergeProgress(local, cloud);
+          saveProgress(merged);
+          return merged;
+        });
+        cloudReady.current = true;
+        setSyncState('ok');
+      } catch (e) {
+        if (cancelled) return;
+        cloudReady.current = true;
+        setSyncState('err');
+        const msg = e instanceof Error ? e.message : '云端同步失败';
+        if (msg.includes('未登录') || msg.includes('401')) {
+          clearAuth();
+          setAuth(null);
+        }
+      }
+    }
+    cloudReady.current = false;
+    void hydrate();
+    return () => {
+      cancelled = true;
+    };
+  }, [auth?.token]);
+
+  // Persist locally always; debounce cloud push when logged in
   useEffect(() => {
     saveProgress(progress);
-  }, [progress]);
+    if (!auth?.token || !cloudReady.current) return;
+    if (skipCloudPush.current) {
+      skipCloudPush.current = false;
+      return;
+    }
+    setSyncState('pending');
+    const t = window.setTimeout(() => {
+      void pushCloudProgress(auth.token, progress)
+        .then(() => setSyncState('ok'))
+        .catch(() => setSyncState('err'));
+    }, 800);
+    return () => window.clearTimeout(t);
+  }, [progress, auth?.token]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -236,6 +307,43 @@ export default function App() {
     setAnswered(0);
   };
 
+  const runAuth = async (mode: 'login' | 'register') => {
+    const username = authUser.trim();
+    const password = authPass;
+    if (username.length < 2) {
+      setAuthMsg({ type: 'err', text: '请输入用户名（至少 2 个字符）' });
+      return;
+    }
+    if (password.length < 4) {
+      setAuthMsg({ type: 'err', text: '密码至少 4 位' });
+      return;
+    }
+    setAuthBusy(true);
+    setAuthMsg(null);
+    try {
+      const user = mode === 'register' ? await apiRegister(username, password) : await apiLogin(username, password);
+      setAuth(user);
+      setAuthPass('');
+      setAuthMsg({ type: 'ok', text: mode === 'register' ? '注册成功，进度将同步到云端' : '登录成功，正在拉取云端进度' });
+    } catch (e) {
+      setAuthMsg({ type: 'err', text: e instanceof Error ? e.message : '操作失败' });
+    } finally {
+      setAuthBusy(false);
+    }
+  };
+
+  const runLogout = async () => {
+    setAuthBusy(true);
+    try {
+      await apiLogout(auth?.token || null);
+    } finally {
+      setAuth(null);
+      setSyncState('idle');
+      setAuthMsg({ type: 'ok', text: '已退出登录（本机进度仍保留）' });
+      setAuthBusy(false);
+    }
+  };
+
   const doExport = () => {
     const blob = new Blob([exportProgress(progress)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -289,6 +397,15 @@ export default function App() {
             {progress.streak} <small>天</small>
           </strong>
           <p className="muted tiny">档案：{progress.profile}</p>
+          {auth ? (
+            <p className="muted tiny" style={{ marginTop: 6 }}>
+              账号：{auth.username}
+            </p>
+          ) : (
+            <p className="muted tiny" style={{ marginTop: 6 }}>
+              未登录 · 进度仅本机
+            </p>
+          )}
         </div>
       </aside>
 
@@ -309,6 +426,21 @@ export default function App() {
             </p>
           </div>
           <div className="header-actions">
+            {auth ? (
+              <span className="auth-user" title="已登录，进度云同步">
+                {auth.username}
+                {syncState !== 'idle' && (
+                  <span className={`sync-dot ${syncState}`} style={{ marginLeft: 6 }}>
+                    <i />
+                    {syncState === 'ok' ? '已同步' : syncState === 'pending' ? '同步中' : '同步失败'}
+                  </span>
+                )}
+              </span>
+            ) : (
+              <button type="button" className="accent-pill" onClick={() => setTab('progress')}>
+                登录同步
+              </button>
+            )}
             <label className="accent-pill">
               发音
               <select
@@ -338,7 +470,11 @@ export default function App() {
                   <br />
                   一套词库练到底
                 </h2>
-                <p>闪卡、测验、收藏与进度导出都在本机浏览器完成，换设备请导出 JSON。</p>
+                <p>
+                  {auth
+                    ? `已登录 ${auth.username}，学习进度会自动同步到云端，换手机也能接着学。`
+                    : '登录后进度同步到云端；未登录时进度保存在本机，也可导出 JSON。'}
+                </p>
                 <button type="button" onClick={() => setTab('learn')}>
                   开始今日闪卡 →
                 </button>
@@ -812,9 +948,62 @@ export default function App() {
               <div>
                 <h2>学习档案与进度</h2>
                 <p className="muted warn">
-                  进度保存在本机浏览器 localStorage。清除站点数据或换浏览器会丢失——请定期导出 JSON，换设备时再导入。
+                  {auth
+                    ? '已登录：进度会自动同步到服务器；本机仍保留一份缓存。建议偶尔导出 JSON 备份。'
+                    : '未登录时进度只存在本机浏览器。注册/登录后即可跨设备同步。'}
                 </p>
               </div>
+            </div>
+            <div className="auth-panel">
+              <h3>{auth ? '云端账号' : '注册 / 登录（同步进度）'}</h3>
+              {auth ? (
+                <div className="auth-bar">
+                  <span className="auth-user">{auth.username}</span>
+                  <span className={`sync-dot ${syncState}`}>
+                    <i />
+                    {syncState === 'ok' ? '云端已同步' : syncState === 'pending' ? '正在同步…' : syncState === 'err' ? '同步失败' : '待命'}
+                  </span>
+                  <button type="button" disabled={authBusy} onClick={() => void runLogout()}>
+                    退出登录
+                  </button>
+                </div>
+              ) : (
+                <div className="auth-form">
+                  <label>
+                    用户名
+                    <input
+                      value={authUser}
+                      onChange={(e) => setAuthUser(e.target.value)}
+                      placeholder="自己取一个"
+                      autoComplete="username"
+                      maxLength={32}
+                    />
+                  </label>
+                  <label>
+                    密码
+                    <input
+                      type="password"
+                      value={authPass}
+                      onChange={(e) => setAuthPass(e.target.value)}
+                      placeholder="至少 4 位"
+                      autoComplete="current-password"
+                      maxLength={64}
+                    />
+                  </label>
+                  <button type="button" className="primary" disabled={authBusy} onClick={() => void runAuth('login')}>
+                    登录
+                  </button>
+                  <button type="button" disabled={authBusy} onClick={() => void runAuth('register')}>
+                    注册
+                  </button>
+                </div>
+              )}
+              {authMsg && <p className={`auth-msg ${authMsg.type}`}>{authMsg.text}</p>}
+              {!auth && (
+                <p className="muted tiny" style={{ marginTop: 8 }}>
+                  每人自己设用户名和密码即可，无需邮箱。同事各用各的账号，进度互不干扰。
+                </p>
+              )}
             </div>
             <div className="progress-form">
               <label>

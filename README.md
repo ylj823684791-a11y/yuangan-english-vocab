@@ -74,3 +74,21 @@ npm run preview
 ## 例句说明
 
 词条含 2–3 条场景例句（`examples`），闪卡/词库/测验按词条轮换展示，减少“Please confirm…”类模板感。安装、管件、电气与通讯词参考水质仪表说明书常见英文（接线、24 VDC、干接点、NPT 等）。
+
+## 云端进度（阿里云）
+
+线上地址：<http://47.109.154.212/>
+
+- 打开「进度」页 → **注册 / 登录**（自己设用户名和密码即可，无需邮箱）
+- 登录后学习进度自动同步到服务器，换手机/电脑也能接着用
+- 本机仍保留 localStorage 缓存；也可继续导出 JSON 备份
+
+### 服务端
+
+- 静态站 + API：`/opt/yuangan-vocab`
+- API 进程：`systemctl status yuangan-vocab`（Python，监听 `127.0.0.1:3001`）
+- Nginx：80 端口反代 `/api`，其余走前端 `dist`
+- 数据库：`/opt/yuangan-vocab/server/data/vocab.db`
+
+若外网打不开，请在阿里云控制台检查该 ECS 的**安全组**是否放行入方向 **TCP 80**（源 `0.0.0.0/0`）。
+
