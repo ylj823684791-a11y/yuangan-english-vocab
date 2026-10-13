@@ -309,11 +309,16 @@ a { color: inherit; }
   margin-top: 6px !important;
   overflow-wrap: anywhere;
 }
-.flash-actions { grid-template-columns: 1fr 1fr 1fr !important; }
+.flash-actions { grid-template-columns: 1fr 1fr !important; }
 .flash-actions .next {
   background: var(--ink) !important;
   color: #fff !important;
   border-color: var(--ink) !important;
+}
+.flash-actions button:disabled,
+.row-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 .quiz-foot {
   flex-direction: column !important;
@@ -430,7 +435,7 @@ a { color: inherit; }
   }
   .flash-front h2 { font-size: 30px; margin: 12px 0 6px; }
   .flash-back h2 { font-size: 26px; }
-  .flash-actions { grid-template-columns: 1fr !important; }
+  .flash-actions { grid-template-columns: 1fr 1fr !important; }
   .flash-actions button { font-size: 14px; min-height: 48px; }
   .hero {
     padding: 22px 18px;

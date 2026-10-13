@@ -267,8 +267,8 @@ export default function App() {
     setFlipped(false);
   };
   const prevCard = () => {
-    if (!deck.length) return;
-    setCardIndex((i) => (i - 1 + deck.length) % deck.length);
+    if (!deck.length || safeCardIndex <= 0) return;
+    setCardIndex((i) => i - 1);
     setFlipped(false);
   };
 
@@ -624,6 +624,14 @@ export default function App() {
                   <button type="button" className="ok" onClick={() => { markKnown(card.term); nextCard(); }}>
                     已掌握
                   </button>
+                  <button
+                    type="button"
+                    className="prev"
+                    onClick={prevCard}
+                    disabled={safeCardIndex <= 0}
+                  >
+                    ← 上一个
+                  </button>
                   <button type="button" className="next" onClick={nextCard}>
                     下一个 →
                   </button>
@@ -652,7 +660,7 @@ export default function App() {
                   </a>
                 </div>
                 <div className="row-actions">
-                  <button type="button" onClick={prevCard}>
+                  <button type="button" onClick={prevCard} disabled={safeCardIndex <= 0}>
                     ← 上一个
                   </button>
                   <button type="button" className="dark" onClick={nextCard}>
