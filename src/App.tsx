@@ -124,11 +124,15 @@ export default function App() {
   const safeCardIndex = deck.length ? cardIndex % deck.length : 0;
   const card = deck[safeCardIndex];
 
+  // Freeze the deck for the quiz session. Rebuilding when progress.known changes
+  // (after a correct answer) used to swap the current question while `picked` stayed
+  // set, so the next item looked already answered with the correct option highlighted.
   const quizDeck = useMemo(() => {
-    const base = unmastered.length >= 4 ? unmastered : words.filter((w) => !progress.known.includes(w.term));
-    const pool = base.length >= 4 ? base : words;
+    const unknown = words.filter((w) => !progress.known.includes(w.term));
+    const pool = unknown.length >= 4 ? unknown : words;
     return shuffle(pool, quizSeed);
-  }, [unmastered, progress.known, quizSeed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only quizSeed: capture known at start/reset, not mid-quiz
+  }, [quizSeed]);
 
   const safeQuizIndex = quizDeck.length ? quizIndex % quizDeck.length : 0;
   const quizWord = quizDeck[safeQuizIndex];
@@ -218,6 +222,11 @@ export default function App() {
     setPicked(null);
     setQuizIndex((i) => (i + 1) % Math.max(1, quizDeck.length));
   };
+
+  // Defense in depth: any word change must clear selection so options start fresh.
+  useEffect(() => {
+    setPicked(null);
+  }, [safeQuizIndex, quizWord?.term]);
 
   const resetQuiz = () => {
     setQuizSeed(Date.now());
@@ -542,7 +551,7 @@ export default function App() {
             <div className="options">
               {quizChoices.map((c) => (
                 <button
-                  key={c}
+                  key={`${safeQuizIndex}-${c}`}
                   type="button"
                   className={
                     picked
