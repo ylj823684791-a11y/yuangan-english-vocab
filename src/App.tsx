@@ -23,6 +23,15 @@ const NAV: { id: Tab; label: string; icon: string }[] = [
   { id: 'progress', label: '进度', icon: '◔' },
 ];
 
+
+function pickExample(word: { example: string; exampleZh: string; examples?: { example: string; exampleZh: string }[] }, salt: number) {
+  const list = word.examples && word.examples.length
+    ? word.examples
+    : [{ example: word.example, exampleZh: word.exampleZh }];
+  const idx = Math.abs(salt) % list.length;
+  return list[idx] || list[0];
+}
+
 function shuffle<T>(items: T[], seed: number): T[] {
   const result = [...items];
   let state = seed >>> 0;
@@ -478,14 +487,19 @@ export default function App() {
               <section className="panel context">
                 <span className="eyebrow">IN CONTEXT</span>
                 <h3>真实语境</h3>
+                {(() => {
+                  const ex = pickExample(card, cardSeed + safeCardIndex * 17);
+                  return (
                 <div className="speak-block">
                   <div className="speak-line">
                     <b>例句</b>
-                    <SpeakBtn text={card.example} accent={progress.accent} />
+                    <SpeakBtn text={ex.example} accent={progress.accent} />
                   </div>
-                  <blockquote>{card.example}</blockquote>
-                  <p className="zh-line">{card.exampleZh || '（暂无中文翻译）'}</p>
+                  <blockquote>{ex.example}</blockquote>
+                  <p className="zh-line">{ex.exampleZh || '（暂无中文翻译）'}</p>
                 </div>
+                  );
+                })()}
                 <div className="tip">
                   <b>来源</b>
                   <a href={card.sourceUrl} target="_blank" rel="noreferrer">
@@ -561,14 +575,19 @@ export default function App() {
                     <p>{quizWord.definition}</p>
                     {quizWord.definitionZh && <p className="zh-line">{quizWord.definitionZh}</p>}
                   </div>
+                  {(() => {
+                    const ex = pickExample(quizWord, quizSeed + quizIndex);
+                    return (
                   <div className="speak-block">
                     <div className="speak-line">
                       <b>例句</b>
-                      <SpeakBtn text={quizWord.example} accent={progress.accent} />
+                      <SpeakBtn text={ex.example} accent={progress.accent} />
                     </div>
-                    <p>{quizWord.example}</p>
-                    <p className="zh-line">{quizWord.exampleZh || '（暂无中文翻译）'}</p>
+                    <p>{ex.example}</p>
+                    <p className="zh-line">{ex.exampleZh || '（暂无中文翻译）'}</p>
                   </div>
+                    );
+                  })()}
                 </div>
                 <button type="button" className="primary" onClick={nextQuiz}>
                   下一题 →
@@ -651,16 +670,19 @@ export default function App() {
                         <p>{w.definition}</p>
                         {w.definitionZh && <p className="zh-line">{w.definitionZh}</p>}
                       </div>
-                      {w.example && (
+                      {w.example && (() => {
+                        const ex = pickExample(w, w.term.length * 13 + (w.examples?.length || 0));
+                        return (
                         <div className="speak-block compact">
                           <div className="speak-line">
                             <em>例句</em>
-                            <SpeakBtn text={w.example} accent={progress.accent} />
+                            <SpeakBtn text={ex.example} accent={progress.accent} />
                           </div>
-                          <p>{w.example}</p>
-                          <p className="zh-line">{w.exampleZh || '（暂无中文翻译）'}</p>
+                          <p>{ex.example}</p>
+                          <p className="zh-line">{ex.exampleZh || '（暂无中文翻译）'}</p>
                         </div>
-                      )}
+                        );
+                      })()}
                     </div>
                     <span className="tag">{w.category}</span>
                     <button type="button" onClick={() => toggleSaved(w.term)}>

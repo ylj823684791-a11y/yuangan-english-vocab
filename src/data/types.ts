@@ -1,3 +1,8 @@
+export type ExampleVariant = {
+  example: string;
+  exampleZh: string;
+};
+
 export type Word = {
   term: string;
   phonetic: string;
@@ -5,11 +10,13 @@ export type Word = {
   category: string;
   level: string;
   definition: string;
-  /** Chinese translation of the English definition (释义翻译) */
+  /** Chinese translation of the English definition */
   definitionZh?: string;
   collocation: string;
   example: string;
   exampleZh: string;
+  /** Optional rotating example variants for flashcards / library */
+  examples?: ExampleVariant[];
   source: string;
   sourceUrl: string;
   status?: string;
